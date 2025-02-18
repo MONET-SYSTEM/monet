@@ -1,1 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to my Weather Forecast App</title>
 
+</head>
+<body>
+
+<div class="card">
+    <div class="search">
+        <input type="text" placeholder="Enter City Name" spellcheck="false">
+        <button><img src="images/search.png" alt="Search icon"></button>
+    </div>
+    <div class="error">
+        <p>Invalid City Name!</p>
+    </div>
+    <div class="weather">
+        <img src="images/rain.png" class="weather-icon" alt="Weather icon">
+        <h1 class="temp">22°C</h1>
+        <h2 class="city">General Santos City</h2>
+        <div class="details">
+            <div class="col">
+                <img src="images/humidity.png" alt="Humidity icon">
+                <div>
+                    <p class="humidity">50%</p>
+                    <p>Humidity</p>
+                </div>
+            </div> 
+            <div class="col">
+                <img src="images/wind.png" alt="Wind icon">
+                <div>
+                    <p class="wind">5 km/h</p>
+                    <p>Wind Speed</p>
+                </div>
+            </div>    
+        </div>  
+    </div>
+</div>
+
+<script>
+const apiKey = "0fcb6b2b6eb97d000749b9d364af865b";
+const apiUrl = "https://api.openweathermap.org/data/2.5/weather?&units=metric&q=";
+
+const searchBox = document.querySelector(".search input");
+const searchBtn = document.querySelector(".search button");
+const weatherIcon = document.querySelector(".weather-icon");
+
+async function checkWeather(city) { 
+    const response = await fetch(apiUrl + city + `&appid=${apiKey}`);
+    
+    if (response.status == 404) {
+        document.querySelector(".error").style.display = "block";
+        document.querySelector(".weather").style.display = "none";
+        return;
+    }
+    else {
+        var data = await response.json();
+
+        console.log(data);
+
+        document.querySelector(".city").innerHTML = data.name;
+        document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°C";
+        document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
+        document.querySelector(".wind").innerHTML = data.wind.speed + "km/h";
+
+        if(data.weather[0].main == "Clouds") {
+            weatherIcon.src = "images/clouds.png";
+        } 
+        else if(data.weather[0].main == "Rain") {
+            weatherIcon.src = "images/rain.png"; 
+        } 
+        else if(data.weather[0].main == "Clear") {
+            weatherIcon.src = "images/clear.png";
+        } 
+        else if(data.weather[0].main == "Snow") {
+            weatherIcon.src = "images/snow.png";
+        } 
+        else if(data.weather[0].main == "Drizzle") {
+            weatherIcon.src = "images/drizzle.png";
+        } 
+        else if(data.weather[0].main == "Mist") {
+            weatherIcon.src = "images/mist.png";
+        } 
+        document.querySelector(".weather").style.display = "block";
+        document.querySelector(".error").style.display = "none";
+    } 
+}
+
+searchBtn.addEventListener("click", () => {
+    checkWeather(searchBox.value);
+});
+
+</script>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background: #0f172a;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+}
+
+.card {
+    width: 100%;
+    max-width: 500px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px);
+    border-radius: 24px;
+    padding: 40px 30px;
+    color: white;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transform: translateY(0);
+    animation: cardEntrance 0.6s ease-out;
+}
+
+@keyframes cardEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.search {
+    width: 100%;
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.search input {
+    flex: 1;
+    padding: 18px 24px;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: white;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.search input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.search input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #7dd3fc;
+}
+
+.search button {
+    background: #7dd3fc;
+    border: none;
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: grid;
+    place-items: center;
+}
+
+.search button:hover {
+    background: #38bdf8;
+    transform: rotate(90deg);
+}
+
+.search button img {
+    width: 24px;
+    filter: brightness(0) invert(1);
+}
+
+.weather-icon {
+    width: 140px;
+    margin: 20px 0;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.temp {
+    font-size: 72px;
+    font-weight: 700;
+    margin: 10px 0;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.city {
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 40px;
+    color: #e2e8f0;
+}
+
+.details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+.col {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.col img {
+    width: 40px;
+    filter: invert(1);
+}
+
+.humidity, .wind {
+    font-size: 24px;
+    font-weight: 600;
+    color: #7dd3fc;
+}
+
+.error {
+    background: #f87171;
+    color: #7f1d1d;
+    padding: 16px;
+    border-radius: 12px;
+    margin-top: 20px;
+    display: none;
+    animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+}
+
+@media (max-width: 480px) {
+    .card {
+        padding: 30px 20px;
+    }
+    
+    .temp {
+        font-size: 64px;
+    }
+    
+    .city {
+        font-size: 28px;
+    }
+}
+</style>
+
+
+</body>
+</html>
